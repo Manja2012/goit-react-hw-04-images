@@ -15,6 +15,9 @@ export default function App() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [largeImage, setLargeImage] = useState('');
+  const [showButton, setShowButton] = useState(1);
+
+  
 
   useEffect(() => {
     if (!query) {
@@ -45,7 +48,12 @@ const fetchGallery = async (query, page) => {
     async function fetchImageGallery() {
       try {
         const responce = await fetchGallery(query, page);
-        setGallery(prevGallery => [...prevGallery, ...responce.gallery]);
+        
+        setGallery(prevGallery => [...prevGallery, ...responce.gallery],
+         );
+        
+         setShowButton(page < Math.ceil(gallery.totalHits/12));
+       
         setLoading(false);
 
         if (responce.gallery.length === 0) {
@@ -97,7 +105,7 @@ const fetchGallery = async (query, page) => {
       <ImageGallery galleryItems={gallery} onClick={openModal} />
       {largeImage && <Modal onClose={closeModal} largeImageURL={largeImage} />}
 
-      {gallery.length >= 12 && <Button onClick={loadMore} />}
+      {gallery.length !== 0 && {showButton} && <Button onClick={loadMore} />}
 
       <ToastContainer autoClose={3000} />
     </div>

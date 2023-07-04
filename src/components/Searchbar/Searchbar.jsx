@@ -29,6 +29,7 @@ export default function SearchBar({ onSubmit }) {
             autoComplete="off"
             autoFocus
             placeholder="Search images and photos"
+            value={inputQuery}
             onChange={handleNameChange}
           />
           <button type="submit" className={css.searchForm__button}>
