@@ -15,7 +15,7 @@ export default function App() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [largeImage, setLargeImage] = useState('');
-  const [showButton, setShowButton] = useState(1);
+  const [showButton, setShowButton] = useState(false);
 
   
 
@@ -43,16 +43,16 @@ const fetchGallery = async (query, page) => {
       };
     }),
   };
-  return galleryItems;
+  return {galleryItems,totalHits};
 };
     async function fetchImageGallery() {
       try {
-        const responce = await fetchGallery(query, page);
+        const {responce,totalHits} = await fetchGallery(query, page);
         
         setGallery(prevGallery => [...prevGallery, ...responce.gallery],
          );
         
-         setShowButton(page < Math.ceil(gallery.totalHits/12));
+         setShowButton(page<Math.ceil(totalHits/12));
        
         setLoading(false);
 
