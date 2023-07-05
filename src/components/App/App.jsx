@@ -7,7 +7,6 @@ import Loader from 'components/Loader/Loader';
 import Modal from 'components/Modal/Modal';
 import Button from 'components/Button/Button';
 
-
 export default function App() {
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState('');
@@ -17,46 +16,42 @@ export default function App() {
   const [largeImage, setLargeImage] = useState('');
   const [showButton, setShowButton] = useState(false);
 
-  
-
   useEffect(() => {
     if (!query) {
       return;
     }
     setLoading(true);
     axios.defaults.baseURL = 'https://pixabay.com/api/';
-const API_KEY = '30815916-ab82dc6f0d54ac4918d959108';
-const BASE_FILTERS = 'image_type=photo&orientation=horizontal&per_page=12';
+    const API_KEY = '30815916-ab82dc6f0d54ac4918d959108';
+    const BASE_FILTERS = 'image_type=photo&orientation=horizontal&per_page=12';
 
-const fetchGallery = async (query, page) => {
-  const response = await axios.get(
-    `?q=${query}&page=${page}&key=${API_KEY}&${BASE_FILTERS}`
-  );
-  const galleryItems = {
-    gallery: response.data.hits.map(img => {
-      const { id, webformatURL, largeImageURL, tags } = img;
-      return {
-        id,
-        webformatURL,
-        largeImageURL,
-        tags,
-      };
-    }),
-  };
-  return {galleryItems,totalHits};
-};
+    const fetchGallery = async (query, page) => {
+      const response = await axios.get(
+        `?q=${query}&page=${page}&key=${API_KEY}&${BASE_FILTERS}`
+      );
+      const gallery = response.data.hits.map(img => {
+        const { id, webformatURL, largeImageURL, tags } = img;
+        return {
+          id,
+          webformatURL,
+          largeImageURL,
+          tags,
+        };
+      });
+
+      return { gallery, totalHits: response.data.totalHits };
+    };
     async function fetchImageGallery() {
       try {
-        const {responce,totalHits} = await fetchGallery(query, page);
-        
-        setGallery(prevGallery => [...prevGallery, ...responce.gallery],
-         );
-        
-         setShowButton(page<Math.ceil(totalHits/12));
-       
+        const { gallery, totalHits } = await fetchGallery(query, page);
+
+        setGallery(prevGallery => [...prevGallery, ...gallery]);
+
+        setShowButton(page < Math.ceil(totalHits / 12));
+
         setLoading(false);
 
-        if (responce.gallery.length === 0) {
+        if (gallery.length === 0) {
           toast.error('Nothing found for your request. Please, try again', {
             theme: 'colored',
           });
@@ -105,10 +100,9 @@ const fetchGallery = async (query, page) => {
       <ImageGallery galleryItems={gallery} onClick={openModal} />
       {largeImage && <Modal onClose={closeModal} largeImageURL={largeImage} />}
 
-      {gallery.length !== 0 && {showButton} && <Button onClick={loadMore} />}
+      {gallery.length !== 0 && showButton && <Button onClick={loadMore} />}
 
       <ToastContainer autoClose={3000} />
     </div>
   );
 }
-
